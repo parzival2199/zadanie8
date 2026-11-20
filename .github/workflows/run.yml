@@ -1,0 +1,38 @@
+name: Databazy - Zadanie 8
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  spustenie:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test-root-123
+          MYSQL_DATABASE: cvicenie9
+          MYSQL_USER: student
+          MYSQL_PASSWORD: '1234'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptest-root-123"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MySQL C++ libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y default-libmysqlclient-dev default-mysql-client
+      - name: Create table
+        run: mysql --protocol=TCP -h 127.0.0.1 -u student -p1234 cvicenie9 < databaza.sql
+      - name: Compile and run
+        env:
+          DB_HOST: 127.0.0.1
+        run: |
+          g++ -std=c++11 testdb.cpp -o testdb $(mysql_config --cflags --libs)
+          ./testdb
