@@ -1,88 +1,94 @@
-# Zadanie 8 – cvičenie 9 – Databázy
+# 🗄️ Zadanie 8 – cvičenie 9 | Databázy
 
-## Čo je cieľ zadania
+**C++ + MySQL · Ubuntu · GitHub Codespaces**
 
-V Ubuntu používať databázu MySQL. Vytvoriť **jednu databázu** s **jednou tabuľkou** `Hodnoty`, ktorá má iba dva stĺpce:
+> Program vygeneruje **10 náhodných čísel**, vypíše ich, uloží do databázy MySQL a následne ich vypíše **zoradené vzostupne**.
 
-- `ID` – celé číslo, primárny kľúč, automaticky sa zvyšuje (`AUTO_INCREMENT`).
-- `hodnota` – celé číslo vygenerované v C++ funkciou `rand()`.
+---
 
-Program vygeneruje **10 náhodných čísel**, vypíše ich, uloží do MySQL, načíta ich zoradené **vzostupne** a vypíše ich na konzolu.
+## 🚀 Rýchly štart
 
-## 1. Čo je v jednotlivých súboroch
-
-| Súbor | Úloha |
+| Čo chceš urobiť? | Príkaz v termináli Codespaces |
 | --- | --- |
-| `testdb.cpp` | Hlavný C++ program – vygenerovanie, výpis, uloženie, načítanie a zoradenie čísel. |
-| `databaza.sql` | Vytvorí tabuľku `Hodnoty` s `ID` a `hodnota`. |
-| `setup.sh` | Nainštaluje potrebné balíky (ak chýbajú), spustí MySQL, vytvorí databázu a používateľa, skompiluje a spustí program. |
-| `.github/workflows/run.yml` | Nastavenie automatického spúšťania na GitHube cez Actions. |
-| `README.md` | Tento návod. |
+| Prvýkrát pripraviť a spustiť projekt | `bash setup.sh` |
+| Vygenerovať ďalších 10 čísel | `DB_HOST=127.0.0.1 ./testdb` |
+| Načítať najnovšie zmeny z GitHubu | `git pull` |
+| Prihlásiť sa do databázy | `mysql -h 127.0.0.1 -u student -p` |
 
-Tabuľku netreba vyplniť ručne: `INSERT` príkazy vykonáva C++ program.
+> [!TIP]
+> **Najrýchlejší spôsob:** Keď si už raz spustil `bash setup.sh`, ďalšie čísla vytvoríš jediným príkazom `DB_HOST=127.0.0.1 ./testdb`. Nemusíš znovu inštalovať ani kompilovať.
 
-## 2. Najjednoduchšie spustenie – GitHub Codespaces
+## 📁 Súbory projektu
 
-Codespaces je online vývojové prostredie s terminálom podobné VS Code. Do svojho počítača nemusíš nič inštalovať.
+| Súbor | Na čo slúži |
+| --- | --- |
+| **[`testdb.cpp`](testdb.cpp)** | Hlavný C++ program – generovanie, ukladanie, načítanie a zoradenie čísel |
+| **[`databaza.sql`](databaza.sql)** | Vytvorenie tabuľky `Hodnoty` s dvoma stĺpcami |
+| **[`setup.sh`](setup.sh)** | Inštalácia, nastavenie MySQL, kompilácia a spustenie |
+| **[`run.yml`](.github/workflows/run.yml)** | Automatické spustenie cez GitHub Actions |
+| **`README.md`** | Tento kompletný návod |
 
-1. Otvor https://github.com/parzival2199/zadanie8
-2. Klikni na zelené **Code**.
-3. Vyber **Codespaces** → **Create codespace on main** (alebo otvor už existujúci Codespace).
-4. V dolnej časti otvor kartu **Terminal**.
-5. V adresári `/workspaces/zadanie8` spusti:
+---
+
+## 💻 1. Spustenie v GitHub Codespaces
+
+1. Otvor **[projekt na GitHube](https://github.com/parzival2199/zadanie8)**.
+2. Klikni na **Code → Codespaces → Create codespace on main** (alebo otvor existujúci Codespace).
+3. V spodnej časti otvor kartu **Terminal**.
+4. Do terminálu vlož:
 
 ```bash
 bash setup.sh
 ```
 
-Pri prvom použití sa nainštaluje MySQL server, klient, knižnice na komunikáciu s MySQL a C++ kompilátor. Skript potom vytvorí databázu, tabuľku a spustí program.
+Skript pripraví MySQL, databázu, tabuľku, skompiluje program a vypíše výsledky.
 
-**Ak si upravil súbory cez webový GitHub a Codespaces má ešte staršiu verziu**, najprv v termináli zadaj:
+### 🔄 Nové náhodné čísla
 
-```bash
-git pull
-```
-
-Potom `bash setup.sh`.
-
-### Ako vygenerovať ďalších 10 náhodných čísel
-
-Keď je program už skompilovaný a databáza funguje, **netreba znova inštalovať ani kompilovať**. Stačí:
+Stačí spustiť:
 
 ```bash
 DB_HOST=127.0.0.1 ./testdb
 ```
 
-Hneď sa vypíšu nové náhodné čísla a tie isté čísla zoradené vzostupne. Príkaz `DB_HOST=127.0.0.1` nastaví pripojenie cez TCP, aby nevznikal problém so socketom v Codespaces.
+Program vymaže staré riadky z tabuľky, vloží **10 nových čísel** a vypíše ich aj zoradené.
 
-**Ak zmeníš súbor `testdb.cpp`**, treba ho najprv znovu skompilovať:
+### ✏️ Ak si zmenil kód
+
+Po zmene `testdb.cpp` ho musíš znovu skompilovať:
 
 ```bash
 g++ -std=c++11 testdb.cpp -o testdb $(mysql_config --cflags --libs)
 DB_HOST=127.0.0.1 ./testdb
 ```
 
-## 3. Prihlásenie do MySQL a zobrazenie tabuľky
+Ak si súbory upravil priamo na GitHube, v Codespaces si ich najprv aktualizuj:
 
-Prístupové údaje pre tento školský projekt:
+```bash
+git pull
+```
+
+---
+
+## 🔐 2. Prihlásenie do MySQL
 
 | Údaj | Hodnota |
 | --- | --- |
-| Server | `127.0.0.1` |
-| Používateľ | `student` |
-| Heslo | `1234` |
-| Databáza | `cvicenie9` |
-| Tabuľka | `Hodnoty` |
+| **Server** | `127.0.0.1` |
+| **Používateľ** | `student` |
+| **Heslo** | `1234` |
+| **Databáza** | `cvicenie9` |
+| **Tabuľka** | `Hodnoty` |
 
-V Codespaces zadaj **do bežného terminálu**:
+**V bežnom termináli** zadaj:
 
 ```bash
 mysql -h 127.0.0.1 -u student -p
 ```
 
-Zobrazí sa výzva na heslo. Napíš `1234` a stlač Enter. Pri písaní sa znaky hesla nezobrazujú.
+Keď sa zobrazí `Enter password:`, napíš **`1234`** a stlač Enter. Pri písaní hesla sa znaky nezobrazujú.
 
-Keď sa zobrazí `mysql>`, si prihlásený. Postupne môžeš použiť tieto **SQL príkazy**:
+Po úspešnom prihlásení uvidíš `mysql>`. Teraz môžeš zadávať SQL:
 
 ```sql
 SHOW DATABASES;
@@ -91,27 +97,49 @@ SHOW TABLES;
 SELECT * FROM Hodnoty;
 ```
 
-Výpis tabuľky má stĺpce `ID` a `hodnota`. Zoradenie hodnôt vzostupne:
+**Zoradenie hodnôt vzostupne:**
 
 ```sql
 SELECT * FROM Hodnoty ORDER BY hodnota ASC;
 ```
 
-Odhlásenie z MySQL:
+**Odhlásenie:**
 
 ```sql
 EXIT;
 ```
 
-**Rozdiel:** Príkazy ako `./testdb` sa píšu do bežného terminálu (napr. znak `$`). Príkazy `SELECT` a `USE` sa píšu po prihlásení za `mysql>`.
+> [!IMPORTANT]
+> `mysql>` znamená, že si **vo vnútri MySQL** a píšeš SQL príkazy. Príkaz `./testdb` patrí do **bežného terminálu**, nie do MySQL. Najprv zadaj `EXIT;`.
 
-Ak chceš tabuľku zobraziť bez interaktívneho prihlasovania, môžeš v bežnom termináli použiť:
+---
 
-```bash
-mysql -h 127.0.0.1 -u student -p cvicenie9 -e "SELECT * FROM Hodnoty;"
-```
+## 📊 3. Ako funguje tabuľka
 
-## 4. Čo sa deje v tabuľke
+Databáza sa volá **`cvicenie9`** a obsahuje jedinú tabuľku **`Hodnoty`**.
+
+| ID | hodnota |
+| ---: | ---: |
+| 51 | 35 |
+| 52 | 64 |
+| 53 | 42 |
+| 54 | 80 |
+| … | … |
+
+*Ukážka zo spustenia. Skutočné čísla sa menia pri každom spustení.*
+
+**Dva stĺpce:**
+
+- **`ID`** – automaticky pridelené číslo, primárny kľúč (`AUTO_INCREMENT`).
+- **`hodnota`** – náhodné číslo z C++ funkcie `rand()`.
+
+**Postup programu:** vygeneruje čísla → vypíše ich → uloží do MySQL (`INSERT`) → načíta zoradené (`SELECT ... ORDER BY`) → vypíše výsledok.
+
+> [!NOTE]
+> Po každom spustení sa staré hodnoty vymažú, ale číslovanie `ID` sa **neresetuje**. Preto je normálne, keď máš ID napríklad 51 až 60 namiesto 1 až 10.
+
+<details>
+<summary><strong>Zobraziť SQL štruktúru tabuľky</strong></summary>
 
 Súbor `databaza.sql` obsahuje:
 
@@ -122,75 +150,88 @@ CREATE TABLE IF NOT EXISTS Hodnoty (
 );
 ```
 
-- `ID` sa doplní automaticky.
-- `hodnota` obsahuje číslo z C++ programu.
-- `testdb.cpp` pred každým spustením vymaže **staré riadky** príkazom `DELETE FROM Hodnoty`, potom vloží presne 10 nových.
-- Preto tabuľka obsahuje 10 čísel z posledného spustenia.
-- ID sa však po `DELETE` **nezačína automaticky od 1**. Môžeš vidieť ID napr. 51 až 60 – je to správne.
+Hodnoty vkladá automaticky C++ program. Ručne ich vypĺňať nemusíš.
 
-V programe sa používa:
+</details>
 
-```sql
-INSERT INTO Hodnoty (hodnota) VALUES (42);
-SELECT hodnota FROM Hodnoty ORDER BY hodnota ASC;
-```
+---
 
-Prvý príkaz je len príklad vloženia jedného čísla. Skutočný program vkladá vygenerované hodnoty automaticky.
+## ▶️ 4. Spustenie cez GitHub Actions
 
-## 5. Spustenie cez GitHub Actions (bez Codespaces)
+Ak nechceš otvárať Codespaces, program sa dá spustiť aj priamo cez GitHub:
 
-1. Otvor https://github.com/parzival2199/zadanie8/actions
-2. Vľavo klikni **Databazy - Zadanie 8**.
-3. Klikni **Run workflow** a potvrď.
-4. Otvor vytvorené spustenie označené zelenou fajkou.
-5. Vľavo vyber **spustenie**.
-6. Rozbaľ šípkou riadok **Compile and run**.
-7. Uvidíš vypísaných 10 náhodných a následne 10 zoradených čísel.
+1. Otvor **[GitHub Actions](https://github.com/parzival2199/zadanie8/actions)**.
+2. Vyber **Databazy - Zadanie 8**.
+3. Klikni na **Run workflow** a potvrď.
+4. Otvor nové spustenie → **spustenie** → rozbaľ **Compile and run**.
+5. Uvidíš **10 náhodných čísel** a pod nimi **zoradené hodnoty**.
 
-Ak si už na detailoch predchádzajúceho spustenia, môžeš vpravo hore stlačiť **Re-run all jobs**. Program sa tým spustí znova a vygeneruje nové čísla.
+Ak už máš otvorený výsledok, kliknutím na **Re-run all jobs** spustíš ďalší beh.
 
-**Pozor:** GitHub Actions pripravuje nové prostredie s MySQL pri každom behu, preto trvá dlhšie (často približne minútu). Databáza v Actions je dočasná a po skončení behu sa vypne. Na rýchle opakované spúšťanie je vhodnejší Codespaces.
+> [!TIP]
+> GitHub Actions pri každom spustení pripravuje nové prostredie a dočasnú databázu, preto je pomalší. Na opakované generovanie čísel je **Codespaces rýchlejší**.
 
-Zelené **Success** znamená, že automatický proces prebehol úspešne. Žlté upozornenie o Node.js v akcii checkout nie je chyba C++ programu.
+---
 
-## 6. Riešenie častých problémov
+## 🛠️ 5. Časté problémy
 
-### `ERROR 2002 ... Can't connect to local MySQL server`
+<details>
+<summary><strong>ERROR 2002 – Can't connect to local MySQL server</strong></summary>
 
-MySQL nemusí byť spustené alebo sa klient pokúša použiť lokálny socket. V termináli Codespaces skús:
+Skontroluj spustenie databázy:
 
 ```bash
 sudo service mysql start
 ```
 
-Potom použi pripojenie cez `-h 127.0.0.1` a program spúšťaj cez `DB_HOST=127.0.0.1 ./testdb`. Ak stále nefunguje, spusti `bash setup.sh` a skontroluj chybové hlásenie.
+Používaj TCP pripojenie `127.0.0.1` a program spúšťaj takto:
 
-### `./testdb: No such file or directory`
+```bash
+DB_HOST=127.0.0.1 ./testdb
+```
 
-Program ešte nebol skompilovaný, alebo nie si v adresári projektu. V `/workspaces/zadanie8` spusti:
+Ak treba, použi znovu `bash setup.sh`.
+
+</details>
+
+<details>
+<summary><strong>./testdb: No such file or directory</strong></summary>
+
+Program ešte nemusí byť skompilovaný. V priečinku `/workspaces/zadanie8` zadaj:
 
 ```bash
 bash setup.sh
 ```
 
-### MySQL sa pýta na heslo
+</details>
 
-Pri `mysql -h 127.0.0.1 -u student -p` zadaj heslo `1234`. Znaky pri písaní nevidno – to je normálne.
+<details>
+<summary><strong>Pri hesle sa nezobrazujú znaky</strong></summary>
 
-### Čísla v tabuľke majú ID väčšie ako 10
+Je to normálne. Napíš `1234` a stlač Enter.
 
-Je to normálne: `DELETE` vymaže riadky, ale počítadlo `AUTO_INCREMENT` pokračuje.
+</details>
 
-## 7. Stiahnutie celého projektu ako ZIP
+<details>
+<summary><strong>GitHub Actions zobrazuje žlté upozornenie</strong></summary>
 
-1. Otvor https://github.com/parzival2199/zadanie8
-2. Klikni **Code** → **Download ZIP**.
-3. Stiahne sa `zadanie8-main.zip`.
+Ak má spustenie stav **Success** a upozornenie sa týka Node.js pri `actions/checkout`, nejde o chybu C++ programu.
 
-ZIP obsahuje zdrojové súbory a návod. **Neobsahuje bežiaci MySQL server ani samotné uložené dáta** z Codespaces či Actions. Ak potrebuješ dôkaz výsledku, odfoť výstup z **Compile and run** alebo z terminálu Codespaces.
+</details>
 
-## 8. Čo odovzdať
+---
 
-Základom sú `testdb.cpp` a `databaza.sql`. Celý ZIP navyše obsahuje `setup.sh`, GitHub workflow a tento návod na spustenie. Ak vyučujúci vyžaduje konkrétny spôsob odovzdania, riaď sa jeho pokynmi.
+## 📦 6. Stiahnutie a odovzdanie
 
-**Poznámka k bezpečnosti:** Meno `student` a heslo `1234` sú jednoduché testovacie údaje pre školské prostredie. Nepoužívaj ich na skutočnom verejne prístupnom databázovom serveri.
+1. Otvor **[repozitár zadanie8](https://github.com/parzival2199/zadanie8)**.
+2. Klikni **Code → Download ZIP**.
+3. Stiahne sa súbor **`zadanie8-main.zip`**.
+
+**Hlavné súbory:** `testdb.cpp` a `databaza.sql`. ZIP obsahuje aj spúšťací skript a tento návod.
+
+> [!NOTE]
+> ZIP obsahuje **zdrojové súbory**, nie nainštalovanú databázu ani čísla uložené v MySQL. Ak potrebuješ doložiť výstup, môžeš pridať screenshot z terminálu alebo z **Compile and run**.
+
+---
+
+<sub>Školský testovací projekt. Používateľ `student` a heslo `1234` sú len pre toto cvičenie, nie pre verejný databázový server.</sub>
