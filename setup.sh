@@ -12,4 +12,4 @@ GRANT ALL PRIVILEGES ON cvicenie9.* TO 'student'@'localhost';
 SQL
 mysql --protocol=TCP -h 127.0.0.1 -u student -p1234 cvicenie9 < databaza.sql
 g++ -std=c++11 testdb.cpp -o testdb $(mysql_config --cflags --libs)
-./testdb
+DB_HOST=127.0.0.1 ./testdb
